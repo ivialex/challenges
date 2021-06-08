@@ -1,0 +1,8 @@
+Minukube Status...
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+

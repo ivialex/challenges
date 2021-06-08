@@ -1,0 +1,73 @@
+version: '3'
+
+services:
+  wp:
+    image: wordpress:5.7.2-php7.4-apache # https://hub.docker.com/_/wordpress/ using the apache variant
+    container_name: wordpress
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - 127.0.0.1:8080:80 # change ip, host port and container port if required ${HOST_IP}:${WP_HOST_PORT}:${WP_CONTAINER_PORT}
+    volumes:
+      - wp_data:/var/www/html # Full wordpress project
+      - ./plugins/rock-convert/:/var/www/html/wp-content/plugins/rock-convert # Plugin development
+    working_dir: /var/www/html
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: "${DB_NAME}"
+      WORDPRESS_DB_USER: "${WP_DB_USER}"
+      WORDPRESS_DB_PASSWORD: "${WP_DB_PASS}"
+      WORDPRESS_TABLE_PREFIX: ${WP_TABLE_PREFIX}
+    depends_on:
+      - db
+    links:
+      - db
+    networks:
+      - wp-network
+
+  pma:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpMyAdmin
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # https://docs.phpmyadmin.net/en/latest/setup.html#docker-environment-variables
+      PMA_HOST: db
+      PMA_PORT: ${PMA_PORT}
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+    ports:
+      - 127.0.0.1:8090:80 # change ip, host port and container port if required  ${HOST_IP}:${PMA_HOST_PORT}:${PMA_CONTAINER_PORT}
+    links:
+      - db:db
+    networks:
+      - wp-network
+
+  db:
+    image: mysql:5.7.34 # https://hub.docker.com/_/mysql/ - or mariadb https://hub.docker.com/_/mariadb
+    container_name: mysql
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - 127.0.0.1:3306:3306 # change ip, host port and container port if required ${DB_HOST_IP}:${DB_HOST_PORT}:${DB_CONTAINER_PORT}
+    command: [
+        '--default_authentication_plugin=mysql_native_password',
+        '--character-set-server=utf8mb4',
+        '--collation-server=utf8mb4_unicode_ci'
+    ]
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: "${DB_NAME}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      MYSQL_USER: ${WP_DB_USER}
+      MYSQL_PASSWORD: ${WP_DB_PASS}
+    networks:
+      - wp-network
+
+volumes:
+  db_data: 
+  wp_data: 
+
+networks:
+  wp-network:
+    driver: bridge

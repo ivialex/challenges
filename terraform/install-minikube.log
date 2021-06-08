@@ -1,0 +1,1 @@
+install_minikube.sh [install|start|stop|pause|status|addons|service|remove] <install_prefix>

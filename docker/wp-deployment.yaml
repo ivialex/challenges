@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\repositories\github\challenges\docker\kompose.exe convert
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: wp
+  name: wp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: wp
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\repositories\github\challenges\docker\kompose.exe convert
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/wp-network: "true"
+        io.kompose.service: wp
+    spec:
+      containers:
+      - env:
+        - name: DB_CONTAINER_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: DB_CONTAINER_PORT
+              name: env
+        - name: DB_HOST_IP
+          valueFrom:
+            configMapKeyRef:
+              key: DB_HOST_IP
+              name: env
+        - name: DB_HOST_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: DB_HOST_PORT
+              name: env
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: DB_NAME
+              name: env
+        - name: DB_ROOT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: DB_ROOT_PASSWORD
+              name: env
+        - name: DB_ROOT_USER
+          valueFrom:
+            configMapKeyRef:
+              key: DB_ROOT_USER
+              name: env
+        - name: HOST_IP
+          valueFrom:
+            configMapKeyRef:
+              key: HOST_IP
+              name: env
+        - name: PMA_CONTAINER_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: PMA_CONTAINER_PORT
+              name: env
+        - name: PMA_HOST_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: PMA_HOST_PORT
+              name: env
+        - name: PMA_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: PMA_PORT
+              name: env
+        - name: WORDPRESS_DB_HOST
+          value: db
+        - name: WORDPRESS_DB_NAME
+        - name: WORDPRESS_DB_PASSWORD
+        - name: WORDPRESS_DB_USER
+        - name: WORDPRESS_TABLE_PREFIX
+        - name: WP_CONTAINER_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: WP_CONTAINER_PORT
+              name: env
+        - name: WP_DB_PASS
+          valueFrom:
+            configMapKeyRef:
+              key: WP_DB_PASS
+              name: env
+        - name: WP_DB_USER
+          valueFrom:
+            configMapKeyRef:
+              key: WP_DB_USER
+              name: env
+        - name: WP_HOST_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: WP_HOST_PORT
+              name: env
+        - name: WP_TABLE_PREFIX
+          valueFrom:
+            configMapKeyRef:
+              key: WP_TABLE_PREFIX
+              name: env
+        image: wordpress:5.7.2-php7.4-apache
+        imagePullPolicy: ""
+        name: wordpress
+        ports:
+        - containerPort: 80
+        resources: {}
+        workingDir: /var/www/html
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}
